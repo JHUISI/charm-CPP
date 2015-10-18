@@ -13,11 +13,12 @@ msrc := miracl
 util := builtin
 subdir := $(util)/*.o $(rsrc)/*.o $(msrc)/*.o $(csrc)/*.o
 INCLUDES += -I$(csrc) -I$(incdir) -I$(util)
-# instead of .a
-#EXT := so
-#EXT := dylib
-
 EXT := a
+ifeq ($(OS), Linux)
+    SHLIB := so
+else ifeq ($(OS), Darwin)
+    SHLIB := dylib
+endif
 
 OBJECTS	:= $(csrc)/CharmDictZR.o $(csrc)/CharmListInt.o $(csrc)/CharmListStr.o $(csrc)/CharmListZR.o \
            $(csrc)/CharmListG1.o $(csrc)/CharmListG2.o $(csrc)/CharmListGT.o $(csrc)/CharmList.o $(csrc)/Element.o
@@ -28,8 +29,8 @@ MIRACL_OBJECTS := $(msrc)/MiraclAPI.o
 COMMON_OBJECTS := $(util)/util.o $(util)/policy.tab.o $(util)/SecretUtil.o $(util)/DFA.o $(util)/Benchmark.o
 
 CHARM := charm
-CHARM_LIB1 := libCharmRelic.$(EXT)
-CHARM_LIB2 := libCharmMiracl$(CURVE).$(EXT)
+LIB_RELIC := libCharmRelic.$(EXT)
+LIB_MIRACL := libCharmMiracl$(CURVE).$(EXT)
 CHARM_LIB := $(CHARM_LIB).$(EXT)
 
 # for Linux
@@ -37,12 +38,13 @@ CHARM_LIB := $(CHARM_LIB).$(EXT)
 # for OS X
 LDFLAGS = -dynamiclib -current_version 0.1 -install_name ./$(CHARM_LIB_DYN)
 
-RLIB    := -lrelic
+RLIB    := -lrelic_s
+# TODO: add a better build Makefile for MIRACL
 MLIB	:= $(libdir)/miracl-$(CURVE).a
  
 # link SDL object file with miracl lib 
 #.PHONY: $(NAME)
-#$(NAME): $(OBJECTS) 
+#$(NAME): $(OBJECTS)
 #	$(CXX) $(CXXFLAGS) $(INCLUDES) $(OBJECTS) $(LIB) -o $(NAME)
 
 # compile sourcefiles
@@ -59,13 +61,13 @@ all: $(CHARM_LIB)
 sub:
 	$(MAKE) -C $(util)/
 
-$(CHARM_LIB1): sub $(OBJECTS) $(RELIC_OBJECTS)
-	$(CXX) $(LDFLAGS) -o $(CHARM_LIB1) $(OBJECTS) $(RELIC_OBJECTS) $(COMMON_OBJECTS) $(RLIB)
+$(LIB_RELIC): sub $(OBJECTS) $(RELIC_OBJECTS)
+	$(CXX) $(LDFLAGS) -o $(LIB_RELIC) $(OBJECTS) $(RELIC_OBJECTS) $(COMMON_OBJECTS) $(RLIB)
 
-$(CHARM_LIB2): sub $(OBJECTS) $(MIRACL_OBJECTS)
-	cp $(MLIB) $(CHARM_LIB2)
-	$(AR) rc $(CHARM_LIB2) $(OBJECTS) $(MIRACL_OBJECTS) $(COMMON_OBJECTS)
-	#$(CXX) $(LDFLAGS) -o $(CHARM_LIB2) $(OBJECTS) $(MIRACL_OBJECTS) $(COMMON_OBJECTS) $(MLIB)
+$(LIB_MIRACL): sub $(OBJECTS) $(MIRACL_OBJECTS)
+	cp $(MLIB) $(LIB_MIRACL)
+	$(AR) rc $(LIB_MIRACL) $(OBJECTS) $(MIRACL_OBJECTS) $(COMMON_OBJECTS)
+	#$(CXX) $(LDFLAGS) -o $(LIB_MIRACL) $(OBJECTS) $(MIRACL_OBJECTS) $(COMMON_OBJECTS) $(MLIB)
 
 .PHONY: install
 install: $(CHARM_LIB)

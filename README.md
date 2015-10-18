@@ -13,3 +13,8 @@ Build charm-CPP against the MIRACL library (using BN curves)
 2. make 
 
 3. make install
+
+
+Build charm-CPP against the RELIC library (using BN curves)
+
+TODO

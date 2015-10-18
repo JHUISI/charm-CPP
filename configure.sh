@@ -771,13 +771,14 @@ echo "ARLIBS_BEGIN=$arlibs_begin" >> $config_mk
 echo "ARLIBS_END=$arlibs_end" >> $config_mk
 echo "LIBS+=$LIBS" >> $config_mk
 echo "LIBS_TOOLS+=$libs_tools" >> $config_mk
-
+echo "OS=$targetos" >> $config_mk
 
 # generate list of library paths for linker script
 #cflags=""
 #includes=""
 #ldflags=""
 
+echo "OS Platform       $targetos"
 echo "Install prefix    $prefix"
 echo "data directory    `eval echo $datadir`"
 echo "binary directory  `eval echo $bindir`"
