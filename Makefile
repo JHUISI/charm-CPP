@@ -69,6 +69,10 @@ $(LIB_MIRACL): sub $(OBJECTS) $(MIRACL_OBJECTS)
 	$(AR) rc $(LIB_MIRACL) $(OBJECTS) $(MIRACL_OBJECTS) $(COMMON_OBJECTS)
 	#$(CXX) $(LDFLAGS) -o $(LIB_MIRACL) $(OBJECTS) $(MIRACL_OBJECTS) $(COMMON_OBJECTS) $(MLIB)
 
+# TODO: write a test.cpp that links to the CHARM_LIB
+test: $(LIB_MIRACL)
+    $(CXX)
+
 .PHONY: install
 install: $(CHARM_LIB)
 	$(INSTALL_PROG) $(CHARM_LIB) $(libdir)
