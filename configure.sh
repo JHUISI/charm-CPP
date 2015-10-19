@@ -250,6 +250,10 @@ else
   targetos=`uname -s`
 fi
 
+if [ $targetos == "Darwin" ]; then
+  darwin="yes"
+fi
+
 : ${make=${MAKE-make}}
 : ${install=${INSTALL-install}}
 
@@ -340,8 +344,6 @@ for opt do
   --enable-debug)
       # Enable debugging options that aren't excessively noisy
       debug="yes"
-  ;;
-  --enable-darwin) darwin="yes"
   ;;
   --enable-profiler) profiler="yes"
   ;;
@@ -659,9 +661,9 @@ if test "$debug" = "yes" ; then
   echo "CONFIG_DEBUG_EXEC=y" >> $config_mk
 fi
 
-if test "$darwin" = "yes" ; then
-  echo "CONFIG_DARWIN=y" >> $config_mk
-fi
+#if test "$darwin" = "yes" ; then
+#  echo "CONFIG_DARWIN=y" >> $config_mk
+#fi
 
 if test "$static" = "yes" ; then
   echo "CONFIG_STATIC=y" >> $config_mk
@@ -750,7 +752,8 @@ if test "$darwin" = "yes" ; then
       echo "CXX=gcc-4.2" >> $config_mk 
       echo "HOST_CC=gcc-4.2" >> $config_mk
    else
-      echo "CC=$cc" >> $config_mk
+      echo "CC=clang" >> $config_mk
+      echo "CXX=clang++" >> $config_mk
       echo "HOST_CC=$host_cc" >> $config_mk
    fi
 else

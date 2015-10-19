@@ -15,9 +15,11 @@ subdir := $(util)/*.o $(rsrc)/*.o $(msrc)/*.o $(csrc)/*.o
 INCLUDES += -I$(csrc) -I$(incdir) -I$(util)
 EXT := a
 ifeq ($(OS), Linux)
+    LDFLAGS = -shared
     SHLIB := so
 else ifeq ($(OS), Darwin)
     SHLIB := dylib
+    LDFLAGS = -dynamiclib
 endif
 
 OBJECTS	:= $(csrc)/CharmDictZR.o $(csrc)/CharmListInt.o $(csrc)/CharmListStr.o $(csrc)/CharmListZR.o \
@@ -31,12 +33,8 @@ COMMON_OBJECTS := $(util)/util.o $(util)/policy.tab.o $(util)/SecretUtil.o $(uti
 CHARM := charm
 LIB_RELIC := libCharmRelic.$(EXT)
 LIB_MIRACL := libCharmMiracl$(CURVE).$(EXT)
+SHLIB_MIRACL := libCharmMiracl$(CURVE).$(SHLIB)
 CHARM_LIB := $(CHARM_LIB).$(EXT)
-
-# for Linux
-#LDFLAGS = -shared
-# for OS X
-LDFLAGS = -dynamiclib -current_version 0.1 -install_name ./$(CHARM_LIB_DYN)
 
 RLIB    := -lrelic_s
 # TODO: add a better build Makefile for MIRACL
@@ -67,11 +65,11 @@ $(LIB_RELIC): sub $(OBJECTS) $(RELIC_OBJECTS)
 $(LIB_MIRACL): sub $(OBJECTS) $(MIRACL_OBJECTS)
 	cp $(MLIB) $(LIB_MIRACL)
 	$(AR) rc $(LIB_MIRACL) $(OBJECTS) $(MIRACL_OBJECTS) $(COMMON_OBJECTS)
-	#$(CXX) $(LDFLAGS) -o $(LIB_MIRACL) $(OBJECTS) $(MIRACL_OBJECTS) $(COMMON_OBJECTS) $(MLIB)
+	$(CXX) -m64 $(LDFLAGS) -o $(SHLIB_MIRACL) $(OBJECTS) $(MIRACL_OBJECTS) $(COMMON_OBJECTS) $(MLIB)
 
 # TODO: write a test.cpp that links to the CHARM_LIB
 test: $(LIB_MIRACL)
-    $(CXX)
+	$(CXX)
 
 .PHONY: install
 install: $(CHARM_LIB)
@@ -79,7 +77,7 @@ install: $(CHARM_LIB)
         #$(INSTALL_PROG) *.h $(incdir)
 
 distclean:
-	rm -f *.o *.log $(subdir) $(NAME) $(CHARM_LIB) $(CONFIG)
+	rm -f *.o *.log *.a *.$(SHLIB) $(subdir) $(NAME) $(CONFIG)
 clean:
-	rm -f *.o $(subdir) $(NAME) $(CHARM_LIB) 
+	rm -f *.o *.a *.$(SHLIB) $(subdir) $(NAME)
 

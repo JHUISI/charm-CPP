@@ -18,7 +18,9 @@
 #define AES_SECURITY 	80 // for MNT-160
 #define BIG_SIZE		20
 #define MAX_LEN    		BIG_SIZE + PAD_SIZE // 20 bytes necessary for representation of ints
-#include "miracl/pairing_3.h"
+#include <miracl/pairing_3.h>
+
+// #include "miracl/pairing_3.h"
 
 #elif BUILD_BN_CURVE == 1
 
@@ -27,7 +29,9 @@
 #define AES_SECURITY 	128 // for BN-256
 #define BIG_SIZE		32
 #define MAX_LEN			BIG_SIZE + PAD_SIZE // 32 bytes necessary, 2 for zero padding on deserialization
-#include "miracl/pairing_3.h"
+#include <miracl/pairing_3.h>
+
+// #include "miracl/pairing_3.h"
 
 #elif BUILD_SS_CURVE == 1
 // super-singular curve over GF(P) where k=2 (large prime)
@@ -36,7 +40,9 @@
 #define AES_SECURITY	80 // 80 for SS512 (BIG_SIZE 64), 128 for SS1536 (BIG_SIZE 96)
 #define BIG_SIZE		64
 #define MAX_LEN			BIG_SIZE + PAD_SIZE // 64 bytes necessary, 2 for zero padding on deserialization
-#include "miracl/pairing_1.h"
+#include <miracl/pairing_1.h>
+
+// #include "miracl/pairing_1.h"
 /* create symlink to ease user code.
  * G2 really maps to G1.
  */
